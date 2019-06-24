@@ -22,13 +22,14 @@ displacement_matrix_global_initial=np.zeros((number_of_elements+1,1))
 #loop for iterating load from 0% to 100% with user defined start,stop,minimum,maximum
 for i in range(number_of_steps):
     tau=tau+delta_t           #see if tau values are generating properly
-    displacement_matrix_global=displacement_matrix_global_initial
-    #delta_displacement_matrix_global???
+    displacement_matrix_global=displacement_matrix_global_initial[-1]  
+    #append displacement_matrix_global_initial at the end of iteration
+    delta_displacement_matrix_global=np.zeros((number_of_elements+1,1))
 
     #DO Newton_Raphson_method
         k=1
         stiffness_matrix_global=np.zeros([number_of_elements+1,number_of_elements+1])
-        #G=???
+        G_global=np.zeros((number_of_elements+1,1))
         for j in range(number_of_elements):
             assignment_matrix=ASSIGNMENT_MATRIX(j,number_of_elements)
             displacement_matrix_element=np.matmul(assignment_matrix,displacement_matrix_global)
@@ -36,10 +37,10 @@ for i in range(number_of_steps):
             ###  input displacement_matrix_element,tau,co-ordinates of nodes
             ###  output stiffness_matrix_element,force_internal_element,force_external_element
             stiffness_matrix_global=stiffness_matrix_global+np.matmul(np.transpose(assignment_matrix),np.matmul(stiffness_matrix_element,assignment_matrix))
-            G=G+np.matmul(np.transpose(assignment_matrix),(force_internal_element-force_external_element))
+            G_global=G_global+np.matmul(np.transpose(assignment_matrix),(force_internal_element-force_external_element))
         Implementation of essential boundary conditions in K and G
-        solve K.delta_u=-G 
-        displacement_matrix_global=displacement_matrix_global+delta_u
+        solve stiffness_matrix_global.delta_displacement_matrix_global=-G_global 
+        displacement_matrix_global=np.append(displacement_matrix_global,(displacement_matrix_global+delta_displacement_matrix_global))
         Implementation of essential boundary conditions in displacement_matrix_global
         k=k+1
         if k>k_max restart increment with smaller delta_t
