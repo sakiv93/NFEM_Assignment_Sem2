@@ -23,14 +23,18 @@ nElem=number_of_elements
 #initialization of time like parameter and displacement vector
 time=np.array([0])
 U_g_0=np.zeros((nElem+1,1))
+U_gg=U_g_0 
 
 #loop for iterating load from 0% to 100% with user defined start,stop,minimum,maximum
 for i in range(number_of_steps+1):
-    tau=delta_t*i          #see if tau values are generating properly
+    tau=delta_t*(i+1)          #see if tau values are generating properly
     #U_g=U_g_0[-1]
-    U_g=U_g_0  
+    #U_g=U_g_0 
+    U_g=U_gg[-1]
+    U_g[0]=1/3*E_v*tau*10 
     #append U_g_0 at the end of iteration
     dU_g=np.zeros((nElem+1,1))
+    
 
     #DO Newton_Raphson_method
     k=1
@@ -48,7 +52,7 @@ for i in range(number_of_steps+1):
             F_g_int=F_g_int+np.matmul(np.transpose(A),(F_e_int))
         #Implementation of essential boundary conditions in K and G
         #G_global[0,0]=-10
-        U_g[0,0]=1/3*E_v*tau*10
+        #U_g[0,0]=1/3*E_v*tau*10
         #print(U_g)
         #Reduced system of equations
         K_rg=Kt_g
@@ -65,8 +69,9 @@ for i in range(number_of_steps+1):
         #Implementation of essential boundary conditions in U_g
         if (np.linalg.norm(G_global)<=0.005*np.linalg.norm(F_g_int) or np.linalg.norm(dU_g)<=0.005*np.linalg.norm(U_g)) or k>=5:
             break
-    U_g=np.append(U_g,U_g,axis=0)
-    E_pls=np.append(E_pls,E_pl,axis=1)
+    U_gg=np.append([U_g],[U_g],axis=0)
     print(U_g)
+    E_pls=np.append(E_pls,E_pl,axis=1)
+    print(U_gg)
 
 

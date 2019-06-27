@@ -23,4 +23,4 @@ def COORDINATES_NODES_GLOBAL(number_of_elements,rnode,first_element,q):
 r=COORDINATES_NODES_GLOBAL(number_of_elements,rnode,first_element,q)
 rnodes_Transpose=np.array([r])
 rnodes=rnodes_Transpose.T
-print(rnodes[1:3])
+#print(rnodes[1:3])
