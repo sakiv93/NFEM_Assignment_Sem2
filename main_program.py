@@ -39,19 +39,31 @@ for i in range(number_of_steps):
             assignment_matrix=ASSIGNMENT_MATRIX(j+1,number_of_elements)
             displacement_matrix_element=np.matmul(assignment_matrix,displacement_matrix_global)
             # calling Element routine 
-            stiffness_matrix_element,force_internal_element,force_external_element=elementRoutine(displacement_matrix_element,tau,rnodes[j:j+2])
+            stiffness_matrix_element,force_internal_element,force_external_element,epsilon_plastic=elementRoutine(displacement_matrix_element,tau,rnodes[j:j+2],epsilon_plastic)
             stiffness_matrix_global=stiffness_matrix_global+np.matmul(np.transpose(assignment_matrix),np.matmul(stiffness_matrix_element,assignment_matrix))
             G_global=G_global+np.matmul(np.transpose(assignment_matrix),(force_internal_element-force_external_element))
             Force_internal_global=Force_internal_global+np.matmul(np.transpose(assignment_matrix),(force_internal_element))
         #Implementation of essential boundary conditions in K and G
         G_global[0,0]=-10
-        print(stiffness_matrix_global)
-        delta_displacement_matrix_global=-G_global/stiffness_matrix_global
-        displacement_matrix_global=displacement_matrix_global+delta_displacement_matrix_global
-        k=k+1 
+        displacement_matrix_global[0,0]=1
+        #print(displacement_matrix_global)
+        #Reduced system of equations
+        reduced_stiffness_matrix_global=stiffness_matrix_global
+        reduced_stiffness_matrix_global=np.delete(reduced_stiffness_matrix_global,0,axis=0)
+        reduced_stiffness_matrix_global=np.delete(reduced_stiffness_matrix_global,0,axis=1)
+        reduced_G_global=G_global
+        reduced_G_global=np.delete(reduced_G_global,0,axis=0)
+        #print(stiffness_matrix_global)
+        delta_displacement_matrix_global=np.matmul(np.linalg.inv(reduced_stiffness_matrix_global),-reduced_G_global)
+        displacement_matrix_global[1:]=displacement_matrix_global[1:]+delta_displacement_matrix_global
+        k=k+1
+        #print(k) 
+        
         #Implementation of essential boundary conditions in displacement_matrix_global
-        #if (np.linalg.norm(G_global)<=0.005*np.linalg.norm(Force_internal_global) or np.linalg.norm(delta_displacement_matrix_global)<=0.005*np.linalg.norm(displacement_matrix_global)) and k>=5:
-        break
-    displacement_matrix_global=np.append(displacement_matrix_global,displacement_matrix_global)
+        if (np.linalg.norm(G_global)<=0.005*np.linalg.norm(Force_internal_global) or np.linalg.norm(delta_displacement_matrix_global)<=0.005*np.linalg.norm(displacement_matrix_global)) or k>=5:
+            break
+    displacement_matrix_global=np.append(displacement_matrix_global,displacement_matrix_global,axis=0)
+    epsilon_plastics=np.append(epsilon_plastics,epsilon_plastic)
+    print(displacement_matrix_global)
 
 
