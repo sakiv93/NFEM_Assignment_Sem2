@@ -1,10 +1,10 @@
 ''' Author: Bauskar Nikhil '''
 ''' eMail: nikhil.bauskar@student.tu-freiberg.de '''
-#from Material_Routine.py import materialRoutine
+from Material_Routine import materialRoutine
 import numpy as np
 
 
-def elementRoutine(U_e, T_m, X_e):
+def elementRoutine(U_e, T_m, X_e,E_pl):
     # X_e = np.array([[1],[3]])
     # U_e = np.array([[0.],[0.]])
     gauss_points = np.array([0])
@@ -26,17 +26,18 @@ def elementRoutine(U_e, T_m, X_e):
                     ])
         
         epsilon = np.matmul(B,U_e)
-        epsilon_pl = 0
+        epsilon_pl = E_pl
 
-        #Ct, sigma = materialRoutine(epsilon,epsilon_pl)
-        Ct = 10
-        sigma = np.array([[3], [2], [1]])
-        Kt_e = np.matmul(B.T,B)*r**2*det_jacobian*Ct
+        Ct, sigma, E_pl = materialRoutine(epsilon,epsilon_pl,T_m)
+        #Ct = 10
+        #sigma = np.array([[3], [2], [1]])
+        Kt_e = np.matmul(np.matmul(B.T,Ct),B)*r**2*det_jacobian
 
         F_int_e = gauss_weights[gp]*np.matmul(B.T,sigma)*(r**2)*det_jacobian
 
-        F_ext_e = (r**2)*sigma[0]*det_jacobian*(N)
+        #F_ext_e = (r**2)*sigma[0]*det_jacobian*(N)
+        F_ext_e = np.zeros_like(N)
 
-    return Kt_e, F_int_e, F_ext_e
+    return Kt_e, F_int_e, F_ext_e,E_pl
         
     
