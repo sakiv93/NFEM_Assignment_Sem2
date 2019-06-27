@@ -16,12 +16,14 @@ def materialRoutine(epsilon,epsilon_pl, T_m):
     sigma_trial = np.matmul(C_el,(epsilon-epsilon_pl))             # trial stress
     sigma_dev_trial = sigma_trial - 1/3 * (np.sum(sigma_trial))
     sigma_equivalent_trial = (1.5*np.sum(sigma_dev_trial*sigma_dev_trial))**0.5
+    
+    print(sigma_equivalent_trial,sigma_y)
 
     #delta_lamda = sigma_equivalent_trial/(3*mu + sigma_y)
     if sigma_equivalent_trial > sigma_y:
         delta_lamda = sigma_equivalent_trial/(3*mu + sigma_y)
     elif sigma_equivalent_trial <= sigma_y:
-        delta_lamda = 0
+        delta_lamda = 0.
     
 
     sigma_updated = (1/3 * np.ones([3,1]) * np.sum(sigma_trial)) + sigma_dev_trial*(1-(3*mu*delta_lamda/sigma_equivalent_trial))
@@ -43,4 +45,4 @@ def materialRoutine(epsilon,epsilon_pl, T_m):
 
     return Ct_out, sigma_updated, epsilon_pl
 
-print(materialRoutine(np.array([[1],[0],[2]]),np.array([[0],[0],[0]]), 0.1))
+#print(materialRoutine(np.array([[1],[0],[2]]),np.array([[0],[0],[0]]), 0.1))
