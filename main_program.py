@@ -11,7 +11,7 @@ from assignment_matrix import ASSIGNMENT_MATRIX
 from Element_Routine import elementRoutine
 
 #solving parameters
-number_of_steps = 100
+number_of_steps = 10
 initial_tau = 0
 final_tau = 1
 delta_t = (final_tau-initial_tau)/number_of_steps
@@ -48,7 +48,7 @@ for i in range(number_of_steps+1):
             F_g_int=F_g_int+np.matmul(np.transpose(A),(F_e_int))
         #Implementation of essential boundary conditions in K and G
         #G_global[0,0]=-10
-        U_g[0,0]=1/3*E_v*tau*10    # have to chane U_g assignment
+        U_g[0,0]=1/3*E_v*delta_t*(i+1)*10    # have to chane U_g assignment
         #print(U_g)
         #Reduced system of equations
         K_rg=Kt_g

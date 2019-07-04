@@ -44,16 +44,16 @@ def materialRoutine(epsilon,epsilon_pl, T_m):
 
         Ct_1 = (3*lamda+2*mu) / 3
         Ct_2 = (4*mu/3) * (1-(3*mu*delta_lamda/sigma_equivalent_trial))
-        Ct_2_nd = (-1*mu/3) * (1-(3*mu*delta_lamda/sigma_equivalent_trial))
+        Ct_2_nd = (-2*mu/3) * (1-(3*mu*delta_lamda/sigma_equivalent_trial))
         Ct_3 = ((3*mu) / (sigma_equivalent_trial**2))* np.matmul(sigma_dev_trial,np.transpose(sigma_dev_trial))
 
 
 
-    Ct = np.array([[Ct_1 + Ct_2, Ct_2_nd, Ct_2_nd],
-                    [Ct_2_nd, Ct_1 + Ct_2, Ct_2_nd],
-                    [Ct_2_nd, Ct_2_nd, Ct_1 + Ct_2]
+    Ct = np.array([[Ct_1 + Ct_2, Ct_1+Ct_2_nd, Ct_1+Ct_2_nd],
+                    [Ct_1+Ct_2_nd, Ct_1 + Ct_2, Ct_1+Ct_2_nd],
+                    [Ct_1+Ct_2_nd, Ct_1+Ct_2_nd, Ct_1 + Ct_2]
                     ]) 
-    Ct_out = Ct + Ct_3 
+    Ct_out = C_el #Ct + Ct_3 
 
     epsilon_pl = epsilon - np.transpose(np.matmul(np.transpose(sigma_updated), np.linalg.inv(C_el)))
 
