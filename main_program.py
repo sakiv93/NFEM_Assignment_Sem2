@@ -1,6 +1,10 @@
 import numpy as np 
 import matplotlib.pyplot as plt
 
+#f=open('Output_Nfem.txt','a')
+#f100=open('Output_Nfem_100.txt','a')
+#fk=open('Output_Nfem_k.txt','a')
+
 #To import co-ordinates of nodes from mesh_generation file
 from mesh_generation import *
 #To import material parameters from material_parameters file
@@ -12,11 +16,14 @@ from Element_Routine import elementRoutine
 
 #solving parameters
 number_of_steps = 10
+#print('number_of_steps:',number_of_steps,file=f)
 initial_tau = 0
 final_tau = 1
 delta_t = (final_tau-initial_tau)/number_of_steps
+#print('delta_t:',delta_t,file=f)
 tau= 0.0
 nElem = number_of_elements
+#print('number_of_elements:',nElem,file=f)
 E_pls = np.zeros([nElem,3,1])
 
 
@@ -26,13 +33,13 @@ U_g_0=np.zeros((nElem+1,1))
 
 #loop for iterating load from 0% to 100% with user defined start,stop,minimum,maximum
 for i in range(number_of_steps):
-    tau=delta_t*(i+1)          #see if tau values are generating properly
-    #u_g=U_g_0[-1]
+    #print('Increment:',i+1,file=f)
+    tau=round(delta_t*(i+1),5)       #see if tau values are generating properly
+    #print('tau:',tau,file=fk)
     u_g=U_g_0 
-    u_g[0,0]=1/3*E_v*delta_t*(i+1)*10 
+    u_g[0,0]=1/3*E_v*delta_t*(i+1)*rnodes[0]
+    #print('Displacements at start:',u_g,file=f)
     E_plss=np.zeros_like(E_pls)
-    #append U_g_0 at the end of iteration
-    ##### dU_g=np.zeros((nElem+1,1))
 
     #DO Newton_Raphson_method
     k=1
@@ -45,43 +52,69 @@ for i in range(number_of_steps):
             u_e=np.matmul(A,u_g)
             # calling Element routine 
             K_e,F_e_int,F_e_ext,E_pl=elementRoutine(u_e,tau,rnodes[j:j+2],E_pls[j])  #Eplsilon_plastic to be saved globally
-            #print(tau)
+            #print('stiffness matrix of element:',i,':',K_e,U_g_0,file=f)
             Kt_g=Kt_g+np.matmul(np.transpose(A),np.matmul(K_e,A))
             G_global=G_global+np.matmul(np.transpose(A),(F_e_int-F_e_ext))
             F_g_int=F_g_int+np.matmul(np.transpose(A),(F_e_int))
             E_plss[j]=E_pl
             
-        #Implementation of essential boundary conditions in K and G
-        #G_global[0,0]=-10
-        # if i==0:
-        #     u_g[0,0]=1/3*E_v*delta_t*(i+1)*10    #if step is only to apply boundary conditions
-        # else:
-        #     u_g[0,0]=1/3*E_v*delta_t*(i)*10    # have to chane u_g assignment
-        #print(u_g)
+
         #Reduced system of equations
         K_rg=Kt_g
         K_rg=np.delete(K_rg,0,axis=0)
         K_rg=np.delete(K_rg,0,axis=1)
         reduced_G_global=G_global
         reduced_G_global=np.delete(reduced_G_global,0,axis=0)
-        #print(Kt_g)
         dU_g=np.matmul(np.linalg.inv(K_rg),-reduced_G_global)
         u_g[1:]=u_g[1:]+dU_g
-        #E_pls=E_plss
         k=k+1
         
         
-        #Implementation of essential boundary conditions in u_g
-        if (np.linalg.norm(G_global,np.inf)<0.005*np.linalg.norm(F_g_int,np.inf) or np.linalg.norm(dU_g,np.inf)<0.005*np.linalg.norm(u_g,np.inf)) or k>=5:
 
-        #if (np.linalg.norm(G_global,np.inf)<0.005*np.linalg.norm(F_g_int,np.inf) or np.linalg.norm(dU_g,np.inf)<0.005*np.linalg.norm(u_g[1:],np.inf)) or k>=5:
+        if (np.linalg.norm(G_global,np.inf)<0.005*np.linalg.norm(F_g_int,np.inf) or np.linalg.norm(dU_g,np.inf)<0.005*np.linalg.norm(u_g[1:],np.inf)) or k>5:
             break
-    #print(k)
-    #  
+    #print('Value of K:',k,file=fk)
     U_g_0 = u_g
+    #print('Displacements at start:',U_g_0,file=f)
     E_pls=E_plss
-    #E_pls = E_pl
-    print(U_g_0)
+
+
+    #print('Plastic strain of all elements:',E_plss,file=f)
+    #print('Displacements at end:',U_g_0,file=f)
+
+
+
+
+
+#Analytical solution:
+#disp_ana=(rnodes[0]**3*E_v)/(3*rnodes**2)
+
+
+# print('Displacements Analytical:\n',disp_ana,file=f100)
+# print('Displacements Fem:\n',U_g_0,file=f100)
+# print('Difference:\n',disp_ana-U_g_0,file=f100)
+
+
+# f.close()
+# f100.close()
+# fk.close()  
+
+
+
+# fig,ax=plt.subplots()
+# ax.plot(rnodes,disp_ana/1e-6) 
+# ax.plot(rnodes,U_g_0/1e-6) 
+# plt.show()
+
+
+    
+    
+    
+    
+    
+    
+    
+    
     #U_g_0=np.append(U_g_0,u_g,axis=0)              # Appending to be take care of
     #E_pls=np.append(E_pls,E_pl,axis=1)             # Appending to be take care of
     #print(u_g)

@@ -1,8 +1,8 @@
 import numpy as np
 
 #Input parameters
-radius_internal=10
-radius_external=40
+radius_internal=10e-6
+radius_external=40e-6
 number_of_elements=10
 #Mesh refinement factor
 meshrefinement_factor=5

@@ -5,8 +5,6 @@ import numpy as np
 
 
 def elementRoutine(U_e, T_m, X_e,E_pl):
-    # X_e = np.array([[1],[3]])
-    # U_e = np.array([[0.],[0.]])
     gauss_points = np.array([0])
     gauss_weights = np.array([2])
 
@@ -31,13 +29,12 @@ def elementRoutine(U_e, T_m, X_e,E_pl):
         Ct, sigma, E_pl = materialRoutine(epsilon,epsilon_pl,T_m)
         #Ct = 10
         #sigma = np.array([[3], [2], [1]])
-        Kt_e = np.matmul(np.matmul(B.T,Ct),B)*r**2*det_jacobian
+        Kt_e = gauss_weights[gp]*np.matmul(np.matmul(B.T,Ct),B)*r**2*det_jacobian
 
         F_int_e = gauss_weights[gp]*np.matmul(B.T,sigma)*(r**2)*det_jacobian
+        #F_int_e=np.matmul(Kt_e,U_e)
 
-        #F_ext_e = (r**2)*sigma[0]*det_jacobian*(N)
         F_ext_e = np.zeros_like(N)
-
     return Kt_e, F_int_e, F_ext_e,E_pl
         
     
