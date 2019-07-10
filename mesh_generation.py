@@ -1,15 +1,16 @@
 import numpy as np
+from material_parameters import *
 
 #Input parameters
-radius_internal=10e-6
-radius_external=40e-6
-number_of_elements=10
+radius_internal = ri
+radius_external = ro
+number_of_elements = nElem 
 #Mesh refinement factor
-meshrefinement_factor=5
+meshrefinement_factor= meshRefinementFactor
 
 q=meshrefinement_factor**(1/(number_of_elements-1))
 first_element=(radius_external-radius_internal)*(1-q)/(1-meshrefinement_factor*q)
-rnode=radius_internal
+rnode = radius_internal
 
 #Function to extract co-ordinates of nodes in global system.
 def COORDINATES_NODES_GLOBAL(number_of_elements,rnode,first_element,q):

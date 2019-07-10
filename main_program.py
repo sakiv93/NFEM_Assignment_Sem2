@@ -32,7 +32,6 @@ U_g_0=np.zeros((nElem+1,1))
 E_pls = np.zeros([nElem,3,1])
 
 # global_U = np.zeros([nSteps,nElem+1,1])
-
 # global_E_pl = np.zeros([nSteps,nElem,3,1])
 # global_sigma = np.zeros([nSteps,nElem,3,1])
 
