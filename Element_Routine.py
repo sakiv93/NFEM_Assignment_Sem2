@@ -8,11 +8,9 @@ def elementRoutine(U_e, T_m, X_e,E_pl):
     gauss_points = np.array([0])
     gauss_weights = np.array([2])
 
-    
     for gp in gauss_points:
         N = np.array([[0.5*(1-gp)], [0.5*(1+gp)]])
         dN_e = np.array([[-0.5], [0.5]])
-       
         jacobian = np.matmul(dN_e.T,X_e)
         det_jacobian = jacobian
         r = np.matmul(N.T,X_e)
@@ -25,16 +23,13 @@ def elementRoutine(U_e, T_m, X_e,E_pl):
         
         epsilon = np.matmul(B,U_e)
         epsilon_pl = E_pl
-
+        # Calling Material Routine
         Ct, sigma, E_pl = materialRoutine(epsilon,epsilon_pl,T_m)
-        #Ct = 10
-        #sigma = np.array([[3], [2], [1]])
+        # Gauss integration for element stiffness and F_int
         Kt_e = gauss_weights[gp]*np.matmul(np.matmul(B.T,Ct),B)*r**2*det_jacobian
-
         F_int_e = gauss_weights[gp]*np.matmul(B.T,sigma)*(r**2)*det_jacobian
-        #F_int_e=np.matmul(Kt_e,U_e)
-
         F_ext_e = np.zeros_like(N)
-    return Kt_e, F_int_e, F_ext_e,E_pl
+        
+    return Kt_e, F_int_e, F_ext_e, E_pl
         
     

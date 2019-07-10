@@ -1,9 +1,7 @@
 ''' Author: Bauskar Nikhil '''
 ''' eMail: nikhil.bauskar@student.tu-freiberg.de '''
 import numpy as np
-
 from material_parameters import *
-#f=open('Output_Nfem.txt','a')
 
 def materialRoutine(epsilon,epsilon_pl, T_m):
     lamda = youngs_modulus/(2*(1+poissons_ratio))
@@ -16,7 +14,7 @@ def materialRoutine(epsilon,epsilon_pl, T_m):
                     [lamda, lamda, lamda+2*mu]
                     ]) 
     
-    sigma_trial = np.matmul(C_el,(epsilon-epsilon_pl))             # trial stress
+    sigma_trial = np.matmul(C_el,(epsilon-epsilon_pl))                              # trial stress
     sigma_dev_trial = sigma_trial - 1/3 * (np.sum(sigma_trial))
     sigma_equivalent_trial = (1.5*np.sum(sigma_dev_trial*sigma_dev_trial))**0.5
     
@@ -24,8 +22,7 @@ def materialRoutine(epsilon,epsilon_pl, T_m):
 
 
     if sigma_equivalent_trial > sigma_y:
-        #print('Plastic',file=f)
-        delta_lamda = sigma_equivalent_trial/(3*mu + sigma_y)
+        delta_lamda = (sigma_equivalent_trial-sigma_y)/(3*mu)# sigma_equivalent_trial/(3*mu + sigma_y)
         sigma_updated = (1/3 * np.ones([3,1]) * np.sum(sigma_trial)) + sigma_dev_trial*(1-(3*mu*delta_lamda/sigma_equivalent_trial))
         Ct_1 = (3*lamda+2*mu) / 3
         Ct_2 = (4*mu/3) * (1-(3*mu*delta_lamda/sigma_equivalent_trial))
@@ -36,21 +33,23 @@ def materialRoutine(epsilon,epsilon_pl, T_m):
                     [Ct_1+Ct_2_nd, Ct_1 + Ct_2, Ct_1+Ct_2_nd],
                     [Ct_1+Ct_2_nd, Ct_1+Ct_2_nd, Ct_1 + Ct_2]
                     ]) - Ct_3
-        epsilon_pl = epsilon - np.matmul(np.linalg.inv(Ct),(sigma_updated))
-        #print('Plastic strain:',epsilon_pl,file=f)
+
+        sigma_dev_m1 = sigma_updated - 1/3 * (np.sum(sigma_updated))
+        sigma_equivalent_m1 = (1.5*np.sum(sigma_dev_m1*sigma_dev_m1))**0.5        
+        epsilon_pl = epsilon_pl + (1.5*delta_lamda*sigma_dev_m1/sigma_equivalent_m1)
     elif sigma_equivalent_trial <= sigma_y:
         #print('Elastic',file=f)
         delta_lamda = 0.
         sigma_updated=sigma_trial
         Ct=C_el
-        epsilon_pl= np.zeros_like(epsilon)
+        epsilon_pl = np.zeros_like(epsilon)      # epsilon_pl_0 = epsilon_pl_1 = 
         #print('Plastic strain:',epsilon_pl,file=f)
 
     
     
     
 
-    return Ct, sigma_updated, epsilon_pl        
+    return Ct, sigma_updated, epsilon_pl       
 
 
     
