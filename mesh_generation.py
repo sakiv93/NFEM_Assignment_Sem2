@@ -1,5 +1,6 @@
 import numpy as np
 from material_parameters import *
+#from main_Convergence import nElem
 
 #Input parameters
 radius_internal = ri

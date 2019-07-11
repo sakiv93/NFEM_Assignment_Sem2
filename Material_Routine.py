@@ -4,8 +4,8 @@ import numpy as np
 from material_parameters import *
 
 def materialRoutine(epsilon,epsilon_pl, T_m):
-    lamda = youngs_modulus/(2*(1+poissons_ratio))
-    mu = (poissons_ratio*youngs_modulus)/((1+poissons_ratio)*(1-2*poissons_ratio))
+    mu = youngs_modulus/(2*(1+poissons_ratio))
+    lamda = (poissons_ratio*youngs_modulus)/((1+poissons_ratio)*(1-2*poissons_ratio))
     sigma_y = yield_stress
     hardening_e_pl = 0.0
 
@@ -42,7 +42,6 @@ def materialRoutine(epsilon,epsilon_pl, T_m):
         sigma_updated=sigma_trial
         Ct=C_el
         epsilon_pl = np.zeros_like(epsilon)     
-    
     
     return Ct, sigma_updated, epsilon_pl       
 

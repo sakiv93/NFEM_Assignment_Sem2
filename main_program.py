@@ -1,6 +1,6 @@
 import numpy as np 
 import matplotlib.pyplot as plt
-
+from pathlib import Path
 
 #To import co-ordinates of nodes from mesh_generation file
 from mesh_generation import *
@@ -71,40 +71,59 @@ for i in range(nSteps):
 
 ''' POST PROCESSING '''
 # # 1. Mesh Plot
-# fig,ax=plt.subplots()
-# ax.plot(rnodes, np.zeros_like(rnodes), marker = '*') 
-# ax.set(xlabel = 'r [$mm$]', title= 'Mesh Distribution')
-# plt.show() 
+fig,ax=plt.subplots()
+ax.plot(rnodes, np.zeros_like(rnodes), marker = '*') 
+ax.set(xlabel = 'r [$mm$]', title= 'Mesh Distribution')
+# output_file_path = Path("Results", "Mesh_Plot.png")
+# output_file_path.parent.mkdir(exist_ok=True)
+# fig.savefig(output_file_path)
+plt.show() 
 
 # #Analytical solution:
-# disp_analytical = (rnodes[0]**3*E_v)/(3*rnodes**2)
-# sigma_rr_analytical = (-2*youngs_modulus*E_v*rnodes[0]**3)/(3*(1+poissons_ratio)*np.array(gauss_loc)**2)
+disp_analytical = (rnodes[0]**3*E_v)/(3*rnodes**2)
+sigma_rr_analytical = (-2*youngs_modulus*E_v*rnodes[0]**3)/(3*(1+poissons_ratio)*np.array(gauss_loc)**3)
   
-# fig,ax=plt.subplots(ncols=2)
-# ax[0].plot(rnodes,disp_analytical, marker = 'd') 
-# ax[0].plot(rnodes,U_g_0, marker = 'o')
-# ax[0].set(xlabel = 'r [$mm$]', ylabel = 'Nodal Displacements [$\mu$m]', title= 'Mesh Distribution') 
+fig,ax=plt.subplots(ncols=2)
+ax[0].plot(rnodes,disp_analytical, marker = 'd') 
+ax[0].plot(rnodes,U_g_0, marker = 'o')
+ax[0].set(xlabel = 'r [$mm$]', ylabel = 'Nodal Displacements [$\mu$m]', title= 'Mesh Distribution') 
 
-# ax[1].plot(gauss_loc, sigma_rr_analytical, marker = 'd') 
-# ax[1].plot(gauss_loc, global_sigma[-1,:,0], marker = 'o')
-# ax[1].set(xlabel = 'r [$mm$]', ylabel = 'Stress at gauss points [$MPa$]', title= 'Mesh Distribution')     
-# plt.show() 
+ax[1].plot(gauss_loc, sigma_rr_analytical, marker = 'd') 
+ax[1].plot(gauss_loc, global_sigma[-1,:,0], marker = 'o')
+ax[1].set(xlabel = 'r [$mm$]', ylabel = 'Stress at gauss points [$MPa$]', title= 'Mesh Distribution')
+# output_file_path = Path("Results", "Analytical_Solutions.png")
+# output_file_path.parent.mkdir(exist_ok=True)
+# fig.savefig(output_file_path)     
+plt.show() 
 
 #Results:
-fig,ax=plt.subplots(ncols=3) 
+fig,ax=plt.subplots(ncols=3,figsize=(15,10)) 
 ax[0].plot(rnodes,U_g_0, marker = 'o')
 ax[0].set(xlabel = 'r [$mm$]', ylabel = '$U_r$ [$mm$]', title= 'Nodal Displacements') 
-
 
 ax[1].plot(gauss_loc, global_sigma[-1,:,0], marker = 'o')
 ax[1].set(xlabel = 'r [$mm$]', ylabel = '$\sigma_{rr}$ [$MPa$]', title= 'Radial Stress at gauss points')
 
-
 ax[2].plot(gauss_loc, global_sigma[-1,:,1], marker = 'o')
 ax[2].set(xlabel = 'r [$mm$]', ylabel = '$\sigma_{\phi\phi}$ [$MPa$]', title= 'Longitudinal Stress at gauss points')
 
-fig.suptitle("Results (Full Load)")
+fig.subplots_adjust(wspace=0.3)
+fig.suptitle("Distribution Results (Full Load)")
+# output_file_path = Path("Results", "Results_fullLoad.png")
+# output_file_path.parent.mkdir(exist_ok=True)
+# fig.savefig(output_file_path)  
 plt.show()
+
+fig,ax=plt.subplots() 
+ax.plot(allTimes, global_sigma[:,0,0], marker = '.')
+ax.set(xlabel = '$tau$', ylabel = '$\sigma_{rr}$ [$MPa$]', title= 'Radial Stress at near $r_i$')
+# output_file_path = Path("Results", "Results_fullLoad.png")
+# output_file_path.parent.mkdir(exist_ok=True)
+# fig.savefig(output_file_path)
+plt.show()
+
+# Convergence Study
+
 
 
 
