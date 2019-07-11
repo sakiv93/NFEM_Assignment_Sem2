@@ -70,26 +70,42 @@ for i in range(nSteps):
 
 
 ''' POST PROCESSING '''
-# 1. Mesh Plot
-fig,ax=plt.subplots()
-ax.plot(rnodes, np.zeros_like(rnodes), marker = '*') 
-ax.set(xlabel = 'r [$\mm$m]', title= 'Mesh Distribution')
-plt.show() 
+# # 1. Mesh Plot
+# fig,ax=plt.subplots()
+# ax.plot(rnodes, np.zeros_like(rnodes), marker = '*') 
+# ax.set(xlabel = 'r [$mm$]', title= 'Mesh Distribution')
+# plt.show() 
 
-#Analytical solution:
-disp_analytical = (rnodes[0]**3*E_v)/(3*rnodes**2)
-sigma_rr_analytical = (-2*youngs_modulus*E_v*rnodes[0]**3)/(3*(1+poissons_ratio)*np.array(gauss_loc)**2)
+# #Analytical solution:
+# disp_analytical = (rnodes[0]**3*E_v)/(3*rnodes**2)
+# sigma_rr_analytical = (-2*youngs_modulus*E_v*rnodes[0]**3)/(3*(1+poissons_ratio)*np.array(gauss_loc)**2)
   
+# fig,ax=plt.subplots(ncols=2)
+# ax[0].plot(rnodes,disp_analytical, marker = 'd') 
+# ax[0].plot(rnodes,U_g_0, marker = 'o')
+# ax[0].set(xlabel = 'r [$mm$]', ylabel = 'Nodal Displacements [$\mu$m]', title= 'Mesh Distribution') 
 
-fig,ax=plt.subplots(ncols=2)
-ax[0].plot(rnodes,disp_analytical, marker = 'd') 
+# ax[1].plot(gauss_loc, sigma_rr_analytical, marker = 'd') 
+# ax[1].plot(gauss_loc, global_sigma[-1,:,0], marker = 'o')
+# ax[1].set(xlabel = 'r [$mm$]', ylabel = 'Stress at gauss points [$MPa$]', title= 'Mesh Distribution')     
+# plt.show() 
+
+#Results:
+fig,ax=plt.subplots(ncols=3) 
 ax[0].plot(rnodes,U_g_0, marker = 'o')
-ax[0].set(xlabel = 'r [$\mm$]', ylabel = 'Nodal Displacements [$\mu$m]', title= 'Mesh Distribution') 
+ax[0].set(xlabel = 'r [$mm$]', ylabel = '$U_r$ [$mm$]', title= 'Nodal Displacements') 
 
-ax[1].plot(gauss_loc, sigma_rr_analytical, marker = 'd') 
+
 ax[1].plot(gauss_loc, global_sigma[-1,:,0], marker = 'o')
-ax[1].set(xlabel = 'r [$\mm$]', ylabel = 'Stress at gauss points [$MPa$]', title= 'Mesh Distribution')     
-plt.show() 
+ax[1].set(xlabel = 'r [$mm$]', ylabel = '$\sigma_{rr}$ [$MPa$]', title= 'Radial Stress at gauss points')
+
+
+ax[2].plot(gauss_loc, global_sigma[-1,:,1], marker = 'o')
+ax[2].set(xlabel = 'r [$mm$]', ylabel = '$\sigma_{\phi\phi}$ [$MPa$]', title= 'Longitudinal Stress at gauss points')
+
+fig.suptitle("Results (Full Load)")
+plt.show()
+
 
 
 
