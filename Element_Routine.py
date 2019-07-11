@@ -30,6 +30,6 @@ def elementRoutine(U_e, T_m, X_e,E_pl):
         F_int_e = gauss_weights[gp]*np.matmul(B.T,sigma)*(r**2)*det_jacobian
         F_ext_e = np.zeros_like(N)
         
-    return Kt_e, F_int_e, F_ext_e, E_pl
+    return Kt_e, F_int_e, F_ext_e, E_pl, sigma,r
         
     
